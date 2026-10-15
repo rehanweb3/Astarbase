@@ -1,0 +1,47 @@
+'use client'
+
+import React from 'react'
+import dynamic from 'next/dynamic'
+import { useTheme } from '@/components/providers/ThemeProvider'
+
+const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center bg-surface-100 text-foreground-lighter text-xs font-mono">
+      Loading SQL Editor...
+    </div>
+  ),
+})
+
+interface SqlCodeEditorProps {
+  value: string
+  onChange: (value: string) => void
+}
+
+export function SqlCodeEditor({ value, onChange }: SqlCodeEditorProps) {
+  const { theme } = useTheme()
+
+  return (
+    <div className={`flex-1 min-h-[220px] relative border-b border-default ${theme === 'dark' ? 'bg-[#171717]' : 'bg-[#ffffff]'}`}>
+      <MonacoEditor
+        height="100%"
+        language="sql"
+        theme={theme === 'dark' ? 'vs-dark' : 'light'}
+        value={value}
+        onChange={(v) => onChange(v || '')}
+        options={{
+          fontSize: 13,
+          fontFamily: "'Source Code Pro', monospace",
+          lineNumbers: 'on',
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          wordWrap: 'on',
+          automaticLayout: true,
+          padding: { top: 12, bottom: 12 },
+          cursorBlinking: 'smooth',
+          renderLineHighlight: 'line',
+        }}
+      />
+    </div>
+  )
+}
